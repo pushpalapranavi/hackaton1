@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLARIS-AI // Antarctic Sea-Ice, Iceberg Trajectory & Navigation Decision Support Platform</title>
+  <meta name="description" content="AI/ML-enabled decision support platform capable of forecasting Antarctic sea-ice concentration, predicting iceberg trajectories, and identifying safe, fuel-efficient navigation routes for polar research vessels.">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>❄️</text></svg>">
+</head>
+<body>
+
+  <!-- ================= TOP COMMAND HEADER ================= -->
+  <header class="top-header">
+    <div class="header-primary">
+      <div class="brand-section">
+        <div class="brand-logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title">POLARIS // CRYONAV-AI</div>
+          <div class="brand-subtitle">Antarctic Sea-Ice & Iceberg Trajectory Navigation Decision Support System</div>
+        </div>
+      </div>
+
+      <div class="header-telemetry-badge">
+        <div class="live-indicator">
+          <div class="live-pulse-dot"></div>
+          <span>POLAR SATELLITE TELEMETRY ONLINE</span>
+        </div>
+        <button id="quickDemoBtn" class="quick-demo-btn" title="Quickly load sample mission: Cape Town to Maitri Station">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          RUN DEMO VOYAGE
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Telemetry News Ticker -->
+    <div class="telemetry-ticker">
+      <div class="ticker-item"><span class="ticker-tag">SENTINEL-1 SAR:</span> Ingested pass over Weddell Sea (38m latency) • High-density fracture leads identified</div>
+      <div class="ticker-item"><span class="ticker-tag">AMSR2 SIC:</span> Daily Pan-Antarctic Sea Ice Grid 6.25km Synced • Total Extent 18.42M km²</div>
+      <div class="ticker-item"><span class="ticker-alert">ICEBERG HAZARD:</span> Megaberg A-23a drifting NNE @ 0.65 kts into Drake Passage shipping fairway</div>
+      <div class="ticker-item"><span class="ticker-tag">HYCOM CURRENTS:</span> Antarctic Circumpolar Current running +1.4 kts east at 56°S</div>
+      <div class="ticker-item"><span class="ticker-tag">STATION RESUPPLY:</span> Maitri Station India Bay fast ice unloader window open</div>
+    </div>
+
+    <!-- Main Navigation Tabs -->
+    <nav class="main-nav-tabs" role="tablist">
+      <button class="nav-tab-btn active" data-tab="tab-gis" role="tab" id="navGisTab">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+        Polar GIS Cockpit
+      </button>
+      <button class="nav-tab-btn" data-tab="tab-route" role="tab" id="navRouteTab">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20a2.4 2.4 0 0 0 2 1 2.4 2.4 0 0 0 2-1 2.4 2.4 0 0 1 2-1 2.4 2.4 0 0 1 2 1 2.4 2.4 0 0 0 2 1 2.4 2.4 0 0 0 2-1 2.4 2.4 0 0 1 2-1 2.4 2.4 0 0 1 2 1 2.4 2.4 0 0 0 2 1 2.4 2.4 0 0 0 2-1"></path><path d="M4 18L3 12h18l-1 6"></path><path d="M12 2v7"></path><path d="M9 5l3-3 3 3"></path></svg>
+        CryoPath Route Optimizer
+      </button>
+      <button class="nav-tab-btn" data-tab="tab-iceberg" role="tab" id="navIcebergTab">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 22 22 22"></polygon></svg>
+        Iceberg Drift & Risk Radar
+      </button>
+      <button class="nav-tab-btn" data-tab="tab-twin" role="tab" id="navTwinTab">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+        Vessel Digital Twin & Telemetry
+      </button>
+      <button class="nav-tab-btn" data-tab="tab-ai" role="tab" id="navAiTab">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 0 0-8 8c0 3.37 2.08 6.26 5 7.43V20a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2.57c2.92-1.17 5-4.06 5-7.43a8 8 0 0 0-8-8z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="10" y1="11" x2="14" y2="11"></line></svg>
+        AI Models & Sensor Pipeline
+      </button>
+      <button class="nav-tab-btn" data-tab="tab-stations" role="tab" id="navStationsTab">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        Antarctic Stations Logistics
+      </button>
+    </nav>
+  </header>
+
+  <!-- ================= MAIN VIEW CONTAINER ================= -->
+  <main class="app-view-container">
+
+    <!-- ================= HERO SHOWCASE BANNER ================= -->
+    <section class="hero-vessel-banner">
+      <img src="assets/hero_icebreaker.jpg" alt="Polar Research Icebreaker Navigating Antarctic Sea Ice" class="hero-vessel-bg">
+      <div class="hero-vessel-gradient-overlay"></div>
+      
+      <div class="hero-vessel-content">
+        <div>
+          <div class="hero-vessel-badge-strip">
+            <span class="hero-status-pill">
+              <span class="live-pulse-dot"></span>
+              RSV POLARIS // ACTIVE MISSION
+            </span>
+            <span class="hero-status-pill">POLAR CLASS PC-2</span>
+            <span class="hero-status-pill">IMO 9876543</span>
+            <span class="threat-badge threat-moderate">WEDDELL SEA TRANSIT</span>
+          </div>
+
+          <h1 class="hero-vessel-title">
+            AI-Enabled Antarctic <span>Sea-Ice & Iceberg Trajectory</span> Navigation Platform
+          </h1>
+          <p class="hero-vessel-desc">
+            Operational decision support platform combining spatio-temporal deep learning (IceNet 2.0), physics-informed hydrodynamic iceberg drift tracking, and Pareto-optimal route planning to guarantee polar vessel safety and reduce fuel consumption.
+          </p>
+        </div>
+
+        <div>
+          <div class="hero-metrics-ribbon">
+            <div class="hero-metric-item">
+              <div class="val">1.5m</div>
+              <div class="lbl">ICEBREAKING CAPABILITY</div>
+            </div>
+            <div class="hero-metric-item">
+              <div class="val text-emerald">-22.4%</div>
+              <div class="lbl">FUEL BURN REDUCTION</div>
+            </div>
+            <div class="hero-metric-item">
+              <div class="val">&lt;5%</div>
+              <div class="lbl">ICE BESETMENT PROBABILITY</div>
+            </div>
+            <div class="hero-metric-item">
+              <div class="val">172m</div>
+              <div class="lbl">UNDER-KEEL CLEARANCE</div>
+            </div>
+          </div>
+
+          <div class="hero-action-buttons">
+            <button class="hero-btn-primary" id="heroBtnPlanRoute">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              OPTIMIZE VOYAGE ROUTE
+            </button>
+            <button class="hero-btn-ghost" id="heroBtnTrackA23a">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="12 2 2 22 22 22"></polygon></svg>
+              TRACK MEGABERG A-23a
+            </button>
+            <button class="hero-btn-ghost" id="heroBtnHullTwin">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+              INSPECT HULL DIGITAL TWIN
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 1. TAB: POLAR GIS COCKPIT ================= -->
+    <section id="tab-gis" class="tab-pane active" role="tabpanel">
+      <div class="gis-cockpit-grid">
+        
+        <!-- Polar Map Viewport -->
+        <div class="gis-map-viewport-card">
+          <!-- Top HUD Overlay -->
+          <div class="map-hud-overlay-top">
+            <div class="map-title-badge">
+              <h2>ANTARCTIC POLAR STEREOGRAPHIC COCKPIT</h2>
+              <p>EPSG:3031 Equivalent • Real-time Sentinel-1 & AMSR2 Ingestion</p>
+            </div>
+            <div class="map-controls-group">
+              <button id="btnZoomIn" class="hud-btn" title="Zoom in">+</button>
+              <button id="btnZoomOut" class="hud-btn" title="Zoom out">-</button>
+              <button id="btnResetMap" class="hud-btn" title="Reset View">Reset South Pole</button>
+              <button id="btnFocusA23a" class="hud-btn text-coral" title="Focus Iceberg A-23a">Target A-23a</button>
+              <button id="btnFocusWeddell" class="hud-btn text-cyan">Weddell Sea</button>
+              <button id="btnFocusRoss" class="hud-btn text-cyan">Ross Sea</button>
+            </div>
+          </div>
+
+          <!-- Canvas Container -->
+          <div class="polar-canvas-wrap">
+            <canvas id="polarCanvas"></canvas>
+          </div>
+
+          <!-- Bottom HUD Overlay: Forecast Scrubber & Coordinates -->
+          <div class="map-hud-overlay-bottom">
+            <div class="forecast-scrubber-card">
+              <span class="scrubber-label">AI SIC FORECAST:</span>
+              <input type="range" id="timeScrubber" class="scrubber-slider" min="0" max="168" step="12" value="0">
+              <span id="scrubberValueText" class="scrubber-value text-cyan">NOWCAST (T+0h)</span>
+            </div>
+            
+            <div class="coords-telemetry-pill">
+              <span>LAT: <strong id="readoutLat">-72.45°S</strong></span>
+              <span>LON: <strong id="readoutLon">-45.20°W</strong></span>
+              <span>SIC: <strong id="readoutSIC" class="text-cyan">64%</strong></span>
+              <span>SST: <strong id="readoutSST">-1.2°C</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar GIS Controls & Inspector -->
+        <aside class="gis-sidebar">
+          
+          <!-- Layer Toggles -->
+          <div class="gis-card">
+            <div class="gis-card-header">
+              <div class="gis-card-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                DYNAMIC DATA LAYERS
+              </div>
+            </div>
+            <div class="layer-toggle-grid">
+              <button class="layer-toggle-btn active" data-layer="seaIce">
+                <span>❄️ Sea Ice (SIC)</span>
+                <span class="toggle-indicator"></span>
+              </button>
+              <button class="layer-toggle-btn active" data-layer="icebergs">
+                <span>🧊 Icebergs & Drift</span>
+                <span class="toggle-indicator"></span>
+              </button>
+              <button class="layer-toggle-btn active" data-layer="currents">
+                <span>🌊 Ocean Currents</span>
+                <span class="toggle-indicator"></span>
+              </button>
+              <button class="layer-toggle-btn" data-layer="winds">
+                <span>💨 Katabatic Winds</span>
+                <span class="toggle-indicator"></span>
+              </button>
+              <button class="layer-toggle-btn active" data-layer="stations">
+                <span>🏔️ Stations</span>
+                <span class="toggle-indicator"></span>
+              </button>
+              <button class="layer-toggle-btn active" data-layer="vessels">
+                <span>🚢 Research Vessels</span>
+                <span class="toggle-indicator"></span>
+              </button>
+              <button class="layer-toggle-btn active" data-layer="routes">
+                <span>🧭 Route Overlays</span>
+                <span class="toggle-indicator"></span>
+              </button>
+              <button class="layer-toggle-btn active" data-layer="graticule">
+                <span>🌐 Polar Graticule</span>
+                <span class="toggle-indicator"></span>
+              </button>
+            </div>
+
+            <!-- Sea Ice Concentration Color Scale -->
+            <div class="sic-legend">
+              <div class="form-label" style="margin-bottom: 4px;">Sea Ice Concentration (SIC %)</div>
+              <div class="sic-legend-bar"></div>
+              <div class="sic-legend-labels">
+                <span>0% Open</span>
+                <span>25% Drift</span>
+                <span>50% Open Pack</span>
+                <span>75% Close Pack</span>
+                <span>100% Fast Ice</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Entity Inspector Card -->
+          <div class="gis-card">
+            <div class="gis-card-header">
+              <div class="gis-card-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                TARGET INSPECTOR
+              </div>
+              <span id="inspectorTypeBadge" class="threat-badge threat-critical">ICEBERG HAZARD</span>
+            </div>
+
+            <div id="inspectorContent" class="inspector-entity-box">
+              <div style="font-weight: 700; font-size: 0.95rem; color: #ffffff;" id="inspectName">Iceberg A-23a (Megaberg)</div>
+              <div style="font-size: 0.72rem; color: var(--text-muted);" id="inspectOrigin">Origin: Filchner-Ronne Ice Shelf (Calved 1986)</div>
+              
+              <div class="inspector-row">
+                <span class="label">Surface Area:</span>
+                <span class="val" id="inspectArea">3,820 km²</span>
+              </div>
+              <div class="inspector-row">
+                <span class="label">Sub-surface Keel / Draft:</span>
+                <span class="val text-coral" id="inspectKeel">280 meters</span>
+              </div>
+              <div class="inspector-row">
+                <span class="label">Current Drift Velocity:</span>
+                <span class="val" id="inspectDrift">0.65 kts @ 038° (NNE)</span>
+              </div>
+              <div class="inspector-row">
+                <span class="label">Estimated Mass:</span>
+                <span class="val" id="inspectMass">1.10 Trillion Tons</span>
+              </div>
+              <div class="inspector-row">
+                <span class="label">72h Threat Horizon:</span>
+                <span class="val text-coral" id="inspectThreat">CRITICAL (Drake Fairway)</span>
+              </div>
+              <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; line-height: 1.4;" id="inspectNotes">
+                World's largest tabular iceberg drifting into the Southern Ocean 'Iceberg Alley'. Sub-surface keel poses extreme collision and sonar hazard to Drake Passage vessels.
+              </p>
+            </div>
+          </div>
+
+          <!-- Quick Scenario Selector -->
+          <div class="gis-card">
+            <div class="gis-card-header">
+              <div class="gis-card-title">EXPEDITION SCENARIOS</div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <button class="btn-secondary" id="scenarioCapeToMaitri">
+                <span>📍 Cape Town ➔ Maitri Station (India Bay)</span>
+              </button>
+              <button class="btn-secondary" id="scenarioUshuaiaToRothera">
+                <span>📍 Ushuaia ➔ Rothera Station (Peninsula)</span>
+              </button>
+              <button class="btn-secondary" id="scenarioHobartToMcMurdo">
+                <span>📍 Hobart ➔ McMurdo Sound (Ross Sea)</span>
+              </button>
+            </div>
+          </div>
+
+        </aside>
+
+      </div>
+    </section>
+
+    <!-- ================= 2. TAB: CRYOPATH ROUTE OPTIMIZER ================= -->
+    <section id="tab-route" class="tab-pane" role="tabpanel">
+      <div class="route-planner-grid">
+        
+        <!-- Route Configuration Sidebar Form -->
+        <div class="gis-card">
+          <div class="gis-card-header">
+            <div class="gis-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+              CRYOPATH VOYAGE CONFIGURATOR
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="selectDeparture">Departure Port</label>
+            <select id="selectDeparture" class="form-select">
+              <option value="ushuaia">Ushuaia, Argentina (Drake Passage)</option>
+              <option value="cape_town" selected>Cape Town, South Africa (Dronning Maud)</option>
+              <option value="hobart">Hobart, Australia (East Antarctica/Prydz)</option>
+              <option value="christchurch">Christchurch / Lyttelton, NZ (Ross Sea)</option>
+              <option value="punta_arenas">Punta Arenas, Chile</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="selectStation">Destination Antarctic Base</label>
+            <select id="selectStation" class="form-select">
+              <option value="maitri" selected>Maitri Station (India / Princess Astrid)</option>
+              <option value="bharati">Bharati Station (India / Larsemann Hills)</option>
+              <option value="mcmurdo">McMurdo Station (USA / Ross Island)</option>
+              <option value="rothera">Rothera Station (UK / Antarctic Peninsula)</option>
+              <option value="neumayer">Neumayer III (Germany / Atka Bay)</option>
+              <option value="esperanza">Base Esperanza (Argentina / Hope Bay)</option>
+              <option value="halley">Halley VI (UK / Brunt Ice Shelf)</option>
+            </select>
+          </div>
+
+          <div class="ship-preview-card">
+            <div class="ship-preview-img-wrap">
+              <img src="assets/hero_icebreaker.jpg" alt="Active Research Icebreaker" class="ship-preview-img" id="routeShipPreviewImg">
+              <span class="ship-preview-badge" id="routeShipPreviewBadge">PC-5 MEDIUM ICEBREAKER</span>
+            </div>
+            <div class="ship-preview-body">
+              <div class="ship-preview-name" id="routeShipPreviewName">MV Bharati Resupply (NCPOR India)</div>
+              <div class="ship-preview-sub" id="routeShipPreviewSpecs">132m Length • 14,200T Displacement • 12.8 MW Propulsion • 0.8m Icebreaking</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="selectVessel">Vessel Polar Class Profile</label>
+            <select id="selectVessel" class="form-select">
+              <option value="rv_bharati" selected>MV Bharati Resupply (NCPOR - PC-5)</option>
+              <option value="rv_polarstern">R/V Polarstern (AWI - PC-2 Heavy Icebreaker)</option>
+              <option value="rv_att">RRS Sir David Attenborough (BAS - PC-4)</option>
+              <option value="rv_palmer">RV Nathaniel B. Palmer (USAP - PC-3)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <div class="form-label">
+              <span>Safety Priority vs Fuel Economy</span>
+              <span id="safetyWeightVal" class="text-cyan">60% Safety / 40% Fuel</span>
+            </div>
+            <div class="range-slider-wrap">
+              <input type="range" id="safetyWeightSlider" class="range-slider" min="0" max="100" value="60">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-label">
+              <span>Iceberg Avoidance Buffer</span>
+              <span id="icebergBufferVal" class="text-cyan">15 NM</span>
+            </div>
+            <div class="range-slider-wrap">
+              <input type="range" id="icebergBufferSlider" class="range-slider" min="5" max="30" value="15">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-label">
+              <span>Max Allowable Sea-Ice Conc. (SIC)</span>
+              <span id="maxSicVal" class="text-cyan">65% Limit</span>
+            </div>
+            <div class="range-slider-wrap">
+              <input type="range" id="maxSicSlider" class="range-slider" min="30" max="95" value="65">
+            </div>
+          </div>
+
+          <button id="btnComputeRoute" class="cta-btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            CALCULATE MULTI-OBJECTIVE ROUTE
+          </button>
+
+          <div style="display: flex; gap: 8px; margin-top: 10px;">
+            <button id="btnSimulateVoyage" class="btn-secondary" style="flex: 1;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              Simulate Transit
+            </button>
+            <button id="btnExportGeoJSON" class="btn-secondary" style="flex: 1;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Export ECDIS
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Route Results, Comparison Cards & Charts -->
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          
+          <!-- Savings Highlight Banner -->
+          <div class="savings-banner">
+            <div>
+              <div style="font-family: var(--font-display); font-size: 1.1rem; color: #ffffff;">POLARIS OPTIMIZATION GAINS</div>
+              <div style="font-size: 0.74rem; color: var(--text-muted); font-family: var(--font-mono);">Compared against standard Great-Circle direct navigation across ice packs</div>
+            </div>
+            <div class="savings-stats-row">
+              <div class="saving-pill">
+                <span class="pill-num text-emerald" id="bannerFuelSaved">48 MT</span>
+                <span class="pill-sub">FUEL SAVED</span>
+              </div>
+              <div class="saving-pill">
+                <span class="pill-num text-cyan" id="bannerCostSaved">$37,680</span>
+                <span class="pill-sub">VOYAGE COST REDUCTION</span>
+              </div>
+              <div class="saving-pill">
+                <span class="pill-num text-emerald" id="bannerCO2Saved">154 MT</span>
+                <span class="pill-sub">CO2 EMISSIONS AVOIDED</span>
+              </div>
+              <div class="saving-pill">
+                <span class="pill-num text-cyan" id="bannerPctSaved">22.4%</span>
+                <span class="pill-sub">EFFICIENCY SURGE</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comparison Grid -->
+          <div class="comparison-grid">
+            
+            <!-- Option 1: AI Optimal Route -->
+            <div class="route-metric-card optimal">
+              <div class="route-badge-title">
+                <span style="color: var(--accent-cyan);">●</span> POLARIS AI Multi-Objective
+              </div>
+              <div class="metric-stat-group">
+                <div class="metric-stat-row">
+                  <span class="lbl">Total Distance:</span>
+                  <span class="val" id="aiDist">2,410 NM</span>
+                </div>
+                <div class="metric-stat-row">
+                  <span class="lbl">Transit Duration:</span>
+                  <span class="val text-emerald" id="aiDays">8.2 Days</span>
+                </div>
+                <div class="metric-stat-row">
+                  <span class="lbl">Total Fuel Burn:</span>
+                  <span class="val text-emerald" id="aiFuel">164 MT</span>
+                </div>
+                <div class="metric-stat-row">
+                  <span class="lbl">Max Ice Concentration:</span>
+                  <span class="val text-cyan" id="aiMaxSic">58%</span>
+                </div>
+                <div class="metric-stat-row">
+                  <span class="lbl">Ice Besetment Risk:</span>
+                  <span class="val text-emerald" id="aiBesetment">3.8% (Very Low)</span>
+                </div>
+                <div class="metric-stat-row">
+                  <span class="lbl">Structural Hull Stress:</span>
+                  <span class="val text-emerald" id="aiStress">2.4 / 10 (Safe)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Option 2: Direct Great Circle -->
+            <div class="route-metric-card">
+              <div class="route-badge-title">
+                <span style="color: var(--accent-amber);">▲</span> Direct Great Circle
+              </div>
+              <div class="metric-stat-group">
+                <div class="metric-stat-row">
+                  <span class="lbl">Total Distance:</span>
+                  <span class="val" id="dirDist">2,320 NM</span>
+                </div>
+                <div class="metric-stat-row">
+                  <span class="lbl">Transit Duration:</span>
+                  <span class="val" id="dirDays">10.4 Days (Slow in Ice)</span>
+                </div>
+                <div class="metric-stat-row">
+                  <span class="lbl">Total Fuel Burn:</span>
+                  <span class="val text-coral" id="dirFuel">212 MT (+29%)</span>
+                </div>
+                <div class="metric-stat-row">
+                  <span class="lbl">Max Ice Concentration:</span>
+                  <span class="val text-coral" id="dirMaxSic">88% (Heavy Pack)</span>
+                </div>
+                <div class="metric-stat-row">
+                  <span class="lbl">Ice Besetment Risk:</span>
+                  <span class="val text-coral" id="dirBesetment">64% (HIGH RISK)</span>
+                </div>
+                <div class="metric-stat-row">
+                  <span class="lbl">Structural Hull Stress:</span>
+                  <span class="val text-coral" id="dirStress">8.2 / 10 (Critical)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Option 3: Deep Water Bypass -->
+            <div class="route-metric-card">
+              <div class="route-badge-title">
+                <span style="color: var(--accent-purple);">◆</span> Deep Ocean Open Bypass
+              </div>
+              <div class="metric-stat-group">
+                <div class="metric-stat-row">
+                  <span class="lbl">Total Distance:</span>
+                  <span class="val" id="bypDist">2,830 NM</span>
+                </div>
+                <div class="metric-stat-row">
+                  <span class="lbl">Transit Duration:</span>
+                  <span class="val" id="bypDays">9.8 Days</span>
+                </div>
+                <div class="metric-stat-row">
+                  <span class="lbl">Total Fuel Burn:</span>
+                  <span class="val" id="bypFuel">198 MT</span>
+                </div>
+                <div class="metric-stat-row">
+                  <span class="lbl">Max Ice Concentration:</span>
+                  <span class="val text-emerald" id="bypMaxSic">38%</span>
+                </div>
+                <div class="metric-stat-row">
+                  <span class="lbl">Ice Besetment Risk:</span>
+                  <span class="val text-emerald" id="bypBesetment">4.2% (Low)</span>
+                </div>
+                <div class="metric-stat-row">
+                  <span class="lbl">Storm/Wave Exposure:</span>
+                  <span class="val text-amber" id="bypStress">High Swell (4-6m)</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Sea-Ice Concentration Profile Along Route Chart -->
+          <div class="gis-card">
+            <div class="gis-card-header">
+              <div class="gis-card-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg>
+                SEA-ICE CONCENTRATION (SIC %) PROFILE ALONG PASSAGE
+              </div>
+            </div>
+            <div style="width: 100%; height: 180px;">
+              <canvas id="routeProfileChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Waypoints Table -->
+          <div class="gis-card">
+            <div class="gis-card-header">
+              <div class="gis-card-title">OPTIMIZED ROUTE WAYPOINT LOG (ECDIS TABLE)</div>
+            </div>
+            <div class="data-table-wrap">
+              <table class="polar-table">
+                <thead>
+                  <tr>
+                    <th>WP #</th>
+                    <th>Waypoint Label</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                    <th>Sea-Ice %</th>
+                    <th>Thickness</th>
+                    <th>Target Speed</th>
+                    <th>Ice Resistance</th>
+                    <th>Leg Dist</th>
+                  </tr>
+                </thead>
+                <tbody id="waypointsTableBody">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= 3. TAB: ICEBERG DRIFT & RISK RADAR ================= -->
+    <section id="tab-iceberg" class="tab-pane" role="tabpanel">
+      <div class="iceberg-sim-grid">
+        
+        <!-- Controls & Parameter Config -->
+        <div class="gis-card">
+          <div class="gis-card-header">
+            <div class="gis-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 22 22 22"></polygon></svg>
+              ICEBERG DRIFT HYDRODYNAMICS ENGINE
+            </div>
+          </div>
+
+          <div class="physics-equation-box">
+            <strong>GOVERNING DRIFT EQUATION:</strong><br>
+            M·(d<span class="text-cyan">V⃗ᵢ</span>/dt) = - M·f·(k̂ × <span class="text-cyan">V⃗ᵢ</span>) + <span class="text-amber">F⃗ₐᵢᵣ</span> + <span class="text-cyan">F⃗𝓌ₐₜₑᵣ</span> + F⃗𝓌ₐᵥₑ + F⃗ₛₗₒₚₑ<br>
+            <span style="font-size: 0.68rem; color: var(--text-muted);">
+              Coriolis force + Atmospheric skin/form drag + Ocean Ekman drag + Wave radiation
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="simSelectBerg">Target Iceberg</label>
+            <select id="simSelectBerg" class="form-select">
+              <option value="A-23a" selected>A-23a (Megaberg, 3,820 km², Keel 280m)</option>
+              <option value="A-76a">A-76a (Fragment, 1,240 km², Keel 260m)</option>
+              <option value="A-81">A-81 (Brunt calve, 1,550 km², Keel 190m)</option>
+              <option value="B-22A">B-22A (Thwaites calve, 2,450 km², Keel 310m)</option>
+              <option value="D-28">D-28 (Amery calve, 1,480 km², Keel 210m)</option>
+              <option value="custom_pinnacle">Custom Pinnacle Berg (High Air Drag)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <div class="form-label">
+              <span>10m Surface Wind Speed (ERA5 / NWP)</span>
+              <span id="simWindSpeedVal" class="text-amber">28 kts</span>
+            </div>
+            <div class="range-slider-wrap">
+              <input type="range" id="simWindSpeedSlider" class="range-slider" min="5" max="60" value="28">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-label">
+              <span>Wind Direction (From)</span>
+              <span id="simWindDirVal" class="text-amber">240° (WSW)</span>
+            </div>
+            <div class="range-slider-wrap">
+              <input type="range" id="simWindDirSlider" class="range-slider" min="0" max="355" step="5" value="240">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-label">
+              <span>Ocean Surface Current Speed (HYCOM)</span>
+              <span id="simCurrentSpeedVal" class="text-cyan">0.85 kts</span>
+            </div>
+            <div class="range-slider-wrap">
+              <input type="range" id="simCurrentSpeedSlider" class="range-slider" min="0.1" max="2.5" step="0.05" value="0.85">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-label">
+              <span>Ocean Current Direction (To)</span>
+              <span id="simCurrentDirVal" class="text-cyan">045° (NE)</span>
+            </div>
+            <div class="range-slider-wrap">
+              <input type="range" id="simCurrentDirSlider" class="range-slider" min="0" max="355" step="5" value="45">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-label">
+              <span>Southern Ocean Water Temp (SST)</span>
+              <span id="simTempSpeedVal" class="text-cyan">-0.5°C</span>
+            </div>
+            <div class="range-slider-wrap">
+              <input type="range" id="simTempSlider" class="range-slider" min="-1.8" max="4.0" step="0.1" value="-0.5">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-label">
+              <span>Drift Prediction Lead Time</span>
+              <span id="simLeadVal" class="text-cyan">72 Hours</span>
+            </div>
+            <div class="range-slider-wrap">
+              <input type="range" id="simLeadSlider" class="range-slider" min="24" max="120" step="24" value="72">
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Simulation Outputs, Vector Diagram & Trajectory -->
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          
+          <!-- Force Diagram Card -->
+          <div class="gis-card">
+            <div class="gis-card-header">
+              <div class="gis-card-title">
+                HYDRODYNAMIC FORCE VECTOR BALANCE & RESULTANT DRIFT
+              </div>
+              <span class="threat-badge threat-critical" id="simResultThreat">COLLISION THREAT: DRAKE CORRIDOR</span>
+            </div>
+            
+            <div class="drift-vector-canvas-wrap">
+              <canvas id="driftVectorCanvas"></canvas>
+            </div>
+
+            <div style="display: flex; justify-content: space-around; margin-top: 12px; font-family: var(--font-mono); font-size: 0.74rem;">
+              <span style="color: #00f2fe;">■ Ocean Current Force (F_ocean)</span>
+              <span style="color: #ffd600;">■ Wind Drag Force (F_wind)</span>
+              <span style="color: #ff9800;">■ Coriolis Deflection (F_coriolis)</span>
+              <span style="color: #ff4757;">■ Resultant Drift Vector</span>
+            </div>
+          </div>
+
+          <!-- Drift Metrics & Thermal Melt Degradation -->
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;">
+            
+            <div class="route-metric-card">
+              <div class="form-label">Drift Velocity</div>
+              <div class="gauge-val-big text-coral" id="simDriftSpeed">0.82 kts</div>
+              <div style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);" id="simDriftHeading">Azimuth: 041° NNE</div>
+            </div>
+
+            <div class="route-metric-card">
+              <div class="form-label">Basal Thermal Melt</div>
+              <div class="gauge-val-big text-cyan" id="simBasalMelt">0.24 m/day</div>
+              <div style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);">Sub-surface keel decay</div>
+            </div>
+
+            <div class="route-metric-card">
+              <div class="form-label">Mass Erosion Rate</div>
+              <div class="gauge-val-big text-cyan" id="simMassLoss">420,000 T/day</div>
+              <div style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);">Wave calving & melt</div>
+            </div>
+
+            <div class="route-metric-card">
+              <div class="form-label">Stability / Roll Risk</div>
+              <div class="gauge-val-big text-emerald" id="simRollRisk">STABLE</div>
+              <div style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);">Metacentric height safe</div>
+            </div>
+
+          </div>
+
+          <!-- SAR Satellite Detection & Leads Breakdown -->
+          <div class="gis-card">
+            <div class="gis-card-header">
+              <div class="gis-card-title">SENTINEL-1 C-BAND SAR ICEBERG DETECTION FEED</div>
+              <span class="threat-badge threat-moderate">NRT SYNTHETIC APERTURE RADAR</span>
+            </div>
+            <div class="hero-image-wrap" style="max-height: 240px;">
+              <img src="assets/sar_radar.jpg" alt="Sentinel-1 SAR Radar Satellite Sea Ice">
+            </div>
+            <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.5;">
+              High-resolution dual-polarization (HH+HV) SAR image ingested over the Weddell Sea drift corridor. Yellow vectors denote AI-derived optical flow iceberg drift velocities (0.15 m/s to 0.45 m/s). False-color brightness reflects surface radar backscatter (dB) delineating thick multi-year ice floes vs open water fracture leads.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= 4. TAB: VESSEL DIGITAL TWIN & TELEMETRY ================= -->
+    <section id="tab-twin" class="tab-pane" role="tabpanel">
+      <div class="digital-twin-grid">
+        
+        <!-- Left: Digital Twin & Surface Surveillance -->
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          
+          <!-- Optical Camera Card -->
+          <div class="gis-card">
+            <div class="gis-card-header">
+              <div class="gis-card-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="12 2 2 22 22 22"></polygon></svg>
+                FORWARD BOW OPTICAL FEED // ICE LEAD DETECTION
+              </div>
+              <span class="threat-badge threat-moderate">LIVE SHIP CAM (4K NRT)</span>
+            </div>
+            <div class="hero-image-wrap" style="max-height: 290px;">
+              <img src="assets/hero_icebreaker.jpg" alt="Polar Research Icebreaker Navigating Antarctic Sea Ice" id="twinShipCamImg">
+              <div class="optical-hud-overlay"></div>
+              <div class="optical-hud-tag">
+                <span class="live-pulse-dot"></span>
+                <span>CAM-01 FWD // BREAKING 1.5M PACK ICE // WEDDELL SEA</span>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 4px;">
+              <span>VISIBILITY: 14 NM (POLAR TWILIGHT)</span>
+              <span class="text-cyan">AURORA AUSTRALIS SENSOR SYNC: 99.4%</span>
+            </div>
+          </div>
+
+          <!-- Digital Twin HUD Schematic -->
+          <div class="gis-card">
+            <div class="gis-card-header">
+              <div class="gis-card-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                ICEBREAKER HULL DIGITAL TWIN & SENSOR SCHEMATIC
+              </div>
+              <span class="threat-badge threat-moderate" id="twinVesselBadge">R/V POLARSTERN (PC-2)</span>
+            </div>
+
+          <div class="hero-image-wrap" style="max-height: 380px;">
+            <img src="assets/digital_twin.jpg" alt="Vessel Digital Twin Schematic">
+          </div>
+
+          <!-- Hull Ice Load Warning Box -->
+          <div style="background: rgba(255, 171, 0, 0.1); border: 1px solid var(--accent-amber); border-radius: var(--radius-sm); padding: 12px; margin-top: 14px; display: flex; gap: 12px; align-items: center;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffab00" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            <div>
+              <div style="font-size: 0.82rem; font-weight: 700; color: var(--accent-amber);">AI NAVIGATIONAL ADVISORY: ICE RIDGE COMPRESSION AHEAD</div>
+              <div style="font-size: 0.74rem; color: #ffffff;">Approaching 78% multi-year pack ice in 3.8 NM. AI advises reducing shaft output to 65% (8.2 kts) to maintain bow impact force within safe 2,800 kN envelope.</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right: Real-time Telemetry Gauges -->
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          
+          <div class="gis-card">
+            <div class="gis-card-header">
+              <div class="gis-card-title">REAL-TIME PROPULSION & HULL SENSORS</div>
+              <span class="threat-badge threat-moderate">AIS ID: IMO 9876543</span>
+            </div>
+
+            <div class="telemetry-gauges-grid">
+              
+              <div class="gauge-card">
+                <div class="gauge-title">Bow Ice Impact Force</div>
+                <div class="gauge-val-big text-cyan" id="gaugeBowImpact">1,850 kN</div>
+                <div class="gauge-progress-bar">
+                  <div class="gauge-progress-fill" style="width: 58%;"></div>
+                </div>
+                <span style="font-size: 0.68rem; color: var(--text-muted); font-family: var(--font-mono);">Safe limit: 3,200 kN</span>
+              </div>
+
+              <div class="gauge-card">
+                <div class="gauge-title">Hull Stress / Strain</div>
+                <div class="gauge-val-big text-cyan" id="gaugeHullStress">185 MPa</div>
+                <div class="gauge-progress-bar">
+                  <div class="gauge-progress-fill" style="width: 48%;"></div>
+                </div>
+                <span style="font-size: 0.68rem; color: var(--text-muted); font-family: var(--font-mono);">Yield point: 380 MPa</span>
+              </div>
+
+              <div class="gauge-card">
+                <div class="gauge-title">Engine Load (Diesel-Electric)</div>
+                <div class="gauge-val-big text-emerald" id="gaugeEngineLoad">74% RPM</div>
+                <div class="gauge-progress-bar">
+                  <div class="gauge-progress-fill" style="width: 74%;"></div>
+                </div>
+                <span style="font-size: 0.68rem; color: var(--text-muted); font-family: var(--font-mono);">Total Output: 10.8 MW</span>
+              </div>
+
+              <div class="gauge-card">
+                <div class="gauge-title">Fuel Flow Rate</div>
+                <div class="gauge-val-big text-cyan" id="gaugeFuelRate">28.4 MT/day</div>
+                <div class="gauge-progress-bar">
+                  <div class="gauge-progress-fill" style="width: 52%;"></div>
+                </div>
+                <span style="font-size: 0.68rem; color: var(--text-muted); font-family: var(--font-mono);">MGO Low Sulphur</span>
+              </div>
+
+              <div class="gauge-card">
+                <div class="gauge-title">Sub-Ice Sonar Bathymetry</div>
+                <div class="gauge-val-big text-cyan">185 m</div>
+                <span style="font-size: 0.68rem; color: var(--text-muted); font-family: var(--font-mono);">Under-keel clearance: 172m</span>
+              </div>
+
+              <div class="gauge-card">
+                <div class="gauge-title">IMO Carbon Rating (CII)</div>
+                <div class="gauge-val-big text-emerald">RATING A</div>
+                <span style="font-size: 0.68rem; color: var(--text-muted); font-family: var(--font-mono);">EEXI Compliant (-24% CO2)</span>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Vessel Selector Pill -->
+          <div class="gis-card">
+            <div class="gis-card-header">
+              <div class="gis-card-title">FLEET DIGITAL TWINS</div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <button class="btn-secondary" id="twinSelectPolarstern">
+                <span>🚢 R/V Polarstern (Alfred Wegener Institute - PC-2)</span>
+              </button>
+              <button class="btn-secondary" id="twinSelectAttenborough">
+                <span>🚢 RRS Sir David Attenborough (BAS UK - PC-4)</span>
+              </button>
+              <button class="btn-secondary" id="twinSelectBharati">
+                <span>🚢 MV Bharati Resupply (NCPOR India - PC-5)</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= 5. TAB: AI MODELS & SENSORS PIPELINE ================= -->
+    <section id="tab-ai" class="tab-pane" role="tabpanel">
+      <div class="model-pipeline-grid">
+        
+        <!-- Left: Architecture Breakdown -->
+        <div class="gis-card">
+          <div class="gis-card-header">
+            <div class="gis-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a8 8 0 0 0-8 8c0 3.37 2.08 6.26 5 7.43V20a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2.57c2.92-1.17 5-4.06 5-7.43a8 8 0 0 0-8-8z"></path></svg>
+              POLARIS MULTI-TIER AI/ML ARCHITECTURE
+            </div>
+          </div>
+
+          <div class="pipeline-step-flow">
+            
+            <div class="pipeline-node">
+              <div class="pipeline-node-title">
+                <span>1. IceNet 2.0 Spatio-temporal Deep Learning</span>
+                <span class="pipeline-badge">U-Net + ConvLSTM + Attention</span>
+              </div>
+              <p class="pipeline-node-desc">
+                Trained on 40+ years of satellite passive microwave (AMSR2/SSMIS) and ERA5 climate reanalysis. Forecasts pan-Antarctic sea-ice concentration probability maps at 6.25km spatial resolution up to 6 months in advance, surpassing SEAS5 dynamical models in extreme melt/freeze regimes.
+              </p>
+            </div>
+
+            <div class="pipeline-node">
+              <div class="pipeline-node-title">
+                <span>2. Iceberg-PINN (Physics-Informed Neural Network)</span>
+                <span class="pipeline-badge">SAR Detection + Navier-Stokes</span>
+              </div>
+              <p class="pipeline-node-desc">
+                Couples YOLOv8-OBB satellite SAR iceberg segmentation with hydrodynamic momentum equations. Embeds Coriolis forces, wind drag, ocean currents, and buoyancy conservation directly into the neural loss function, preventing unphysical drift predictions.
+              </p>
+            </div>
+
+            <div class="pipeline-node">
+              <div class="pipeline-node-title">
+                <span>3. CryoPath Multi-Objective Optimization</span>
+                <span class="pipeline-badge">Pareto A* + Genetic Pathfinder</span>
+              </div>
+              <p class="pipeline-node-desc">
+                Calculates Lindqvist/Riska icebreaking resistance across spatiotemporal ice forecast grids. Balances IMO Polar Code safety indices (POLARIS Risk Index Outcome RIO) against fuel consumption and IMO CII carbon emissions to discover Pareto-optimal navigation waypoints.
+              </p>
+            </div>
+
+            <div class="pipeline-node">
+              <div class="pipeline-node-title">
+                <span>4. Digital Twin Sensor Assimilation</span>
+                <span class="pipeline-badge">Kalman Filter + Stress Gauges</span>
+              </div>
+              <p class="pipeline-node-desc">
+                Real-time edge assimilation of vessel hull strain gauges, bow accelerometers, engine fuel flow, and multibeam forward-looking sonar to validate and dynamically recalibrate the AI path every 30 minutes.
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right: Model Benchmarks & Sensor Feeds -->
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          
+          <!-- Accuracy Chart -->
+          <div class="gis-card">
+            <div class="gis-card-header">
+              <div class="gis-card-title">FORECAST ACCURACY: ICENET 2.0 VS SEAS5 BASELINE (MAE %)</div>
+            </div>
+            <div style="width: 100%; height: 200px;">
+              <canvas id="modelAccuracyChart"></canvas>
+            </div>
+            <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 8px;">
+              Mean Absolute Error (MAE) evaluated on Pan-Antarctic Sea Ice Concentration across lead times. IceNet achieves a 42% reduction in prediction error at T+7 days compared to traditional ECMWF numerical physics models.
+            </p>
+          </div>
+
+          <!-- Active Satellite Ingestion Table -->
+          <div class="gis-card">
+            <div class="gis-card-header">
+              <div class="gis-card-title">REAL-TIME SATELLITE & SENSOR INGESTION PIPELINE</div>
+            </div>
+            <div class="data-table-wrap">
+              <table class="polar-table">
+                <thead>
+                  <tr>
+                    <th>Sensor / Constellation</th>
+                    <th>Agency</th>
+                    <th>Resolution</th>
+                    <th>Latency</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="satelliteTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= 6. TAB: ANTARCTIC STATIONS & RESUPPLY ================= -->
+    <section id="tab-stations" class="tab-pane" role="tabpanel">
+      <div style="margin-bottom: 16px;">
+        <h2 style="font-family: var(--font-display); font-size: 1.2rem; color: #ffffff;">ANTARCTIC RESEARCH STATIONS & LOGISTICS CORRIDORS</h2>
+        <p style="font-size: 0.78rem; color: var(--text-muted); font-family: var(--font-mono);">
+          Real-time ice conditions, katabatic weather warnings, resupply windows, and icebreaker berth availability.
+        </p>
+      </div>
+
+      <div class="stations-card-grid" id="stationsGridContainer">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= SCRIPTS ================= -->
+  <script src="js/bundle.js"></script>
+</body>
+</html>
